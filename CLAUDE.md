@@ -15,6 +15,7 @@ A private library and reading tracker for Tom's wife (the primary reader, a dark
 ## Versions
 Git history is the archive (no `versions.json`; same exception as StreamFinder, Heatmap and GearTracker, GM-011; Tom 2026-11-20). The version will be shown in the app and in `/api/health`. No version numbers or scope approved yet.
 - **Setup (2026-11-20)**: repo initialised, source docs, this file, `.gitignore`. **No application has been built.**
+- **PAUSED by Tom (2026-11-20)**: "pause the project for now". Tom said "build" once, but Claude stopped before writing code because the scope and stack were open (GENERAL_RULES: ask before building when a design choice is open) and put the proposal below to him. He paused instead of answering. To resume: Tom answers the pending proposal (Open decisions 1), then says "build". Nothing is half-built; no Cloudflare resources were created.
 
 ## How it works
 Nothing built yet. No architecture chosen (see Open decisions).
@@ -39,10 +40,18 @@ Nothing built yet. No architecture chosen (see Open decisions).
   - The first-session prompt is kept as its own immutable source file.
 
 ## Open decisions (waiting for Tom)
-1. First-version scope (a proposal will be given; nothing approved).
-2. Tech stack, database, authentication, image storage, deployment topology (within GM-012).
-3. Backup, version-history and restore implementation.
-4. Book metadata providers (free first).
+1. **Pending proposal for 0.1.0 (put to Tom 2026-11-20, NOT approved; Tom paused before answering).** Resume by asking him "Accept all, build" or which points to change.
+   - Scope: two logins checked server-side; data model with work / edition / owned copy / reading history kept apart (history survives a later purchase); add books by ISBN, title/author search or manual entry, every field editable, own cover photos; reading status, completion date with flexible precision, stars and chillies in 0.5 steps, notes, simple series fields and ordering; three views (Desk = owned unread + Currently Reading, Owned & read, Read but not owned), mobile first with bottom navigation in the Gothic theme; JSON/CSV export and automatic backup. Later versions: photo recognition, spreadsheet/app imports, wishlist and gift reservations, recommendations, statistics, push, the 2.5D room.
+   - B1 hosting/database: Cloudflare Worker + D1 + static assets, self-migrating schema (ST-01).
+   - B2 frontend: React + Vite + TypeScript (StreamFinder pattern) with own CSS, no component library.
+   - B3 logins: two named accounts, hashed passwords + session cookies (ST-04 pattern), first accounts via a one-time setup code, each picks their own password; roles let the server hide gift reservations later.
+   - B4 images: Cloudflare R2 (Tom must enable it in the dashboard once; exact steps to be given). Fallback: compressed covers stored in D1 (fine for 0.1.0, weak for spine photos later).
+   - B5 book data: Open Library first (no key); Google Books only if Tom creates a free API key.
+   - B6 backup/history: D1 Time Travel (30 days) + nightly JSON export to R2 + change log per record (who, when, old values) with restore. Start at version 0.1.0.
+   - Side effects told to Tom: R2 needs his dashboard step (the nightly export depends on it); one metadata source may miss some non-English editions (manual entry covers them).
+2. Tech stack, database, authentication, image storage, deployment topology (within GM-012): see the proposal in 1.
+3. Backup, version-history and restore implementation: see 1 (B6).
+4. Book metadata providers (free first): see 1 (B5).
 5. Cover/spine recognition method without paid AI (feasibility unknown).
 6. Desktop rendering technology for the 2.5D room.
 7. Mobile PWA installation and push strategy.
@@ -53,7 +62,12 @@ Nothing built yet. No architecture chosen (see Open decisions).
 - Whether free/local image recognition can identify covers and several spines from one photo well enough.
 - Realistic spine images: no known free source checked.
 - Web Push on the primary reader's phone (iPhone needs a Home Screen app, iOS 16.4+, per ST-02; device not known).
-- Backup and point-in-time recovery options on Cloudflare (for example D1 Time Travel) not checked for this app.
+- Facts checked 2026-11-20 (from the vendors' docs; re-check before building if much time has passed):
+  - R2 is NOT enabled on Tom's Cloudflare account (`wrangler r2 bucket list` answered "Please enable R2 through the Cloudflare Dashboard", code 10042).
+  - D1 Time Travel: restore to any minute in the last 30 days on Workers Paid (7 on Free), no extra cost, max 10 restores per 10 min (developers.cloudflare.com/d1/reference/time-travel).
+  - R2 free allowance (Standard class): 10 GB-month, 1M Class A and 10M Class B operations per month, no egress fees (developers.cloudflare.com/r2/pricing).
+  - Open Library: no key; 1 request/s, 3 requests/s with an identifying User-Agent; no bulk downloads (openlibrary.org/developers/api). Cover lookups by ISBN had a per-IP limit (100 per 5 min in a 2014 post; current value not confirmed).
+  - Google Books: official docs say requests need an API key or token; the keyless quota could not be confirmed.
 
 ## To-do (only items Tom asked for)
-None. Waiting for Tom's decisions and "build".
+None. Project paused by Tom 2026-11-20; on resume, answer Open decisions 1, then "build".
