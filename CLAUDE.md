@@ -20,6 +20,9 @@ Git history is the archive (no `versions.json`; same exception as StreamFinder, 
 ## How it works
 Nothing built yet. No architecture chosen (see Open decisions).
 
+## Design tools (plugins and skills)
+Plugins and skills are managed by Claude under GM-022 (`CentralMemories\GENERAL_RULES.md`, "Plugins and skills"): use one only when the task needs it; this app's design language always wins over a skill's style advice. Fits this app (when unpaused): `frontend-design` and `emil-design-eng` for the Gothic Romance look and the 2.5D room, `animate` / `review-animations` for motion, `mobile-native` for the mobile UI. `impeccable` (parked; adds hooks on every edit) may be switched on for a dedicated design session only, then parked again.
+
 ## Decisions (settled, do not re-propose)
 - Product requirements: everything listed in `docs\chatgpt-original.md`, Project Instructions section 5 "Settled Functional Decisions" (design, library, book registration, reading information, wishlist, recommendations, accounts and persistence, development). In short:
   - Gothic Romance look (black, burgundy, antique gold, mahogany/walnut, leather, velvet, warm light, subtle animation); one 2.5D desktop room with animated zoom; spines on shelves, a selected book comes forward with cover and details; desk with dynamic stacks of every owned unread book and a separate Currently Reading spot; shelf for owned + read, separate shelf for read but not owned; expanded scrollable shelves for large collections; limited customisation of lighting, theme, decoration.
